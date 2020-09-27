@@ -5,40 +5,38 @@ using UnityEngine;
 public class MothBehaviorMouse : MonoBehaviour
 {
     public float speed = 50f;
-    public Vector2 mousePos;
-    public Vector3 point;
+    public float lookSpeed = 90f;
+    private Vector2 mousePos, screenCenter, mouseDistance;
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("Mouse Version of script started on " + gameObject.name);
 
-        point = new Vector3();
+        screenCenter.x = Screen.width / 2;
+        screenCenter.y = Screen.height / 2;
+
         mousePos = new Vector2();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        //Event currentEvent = Event.current;
-        
 
-        // Get the mouse position from Event.
-        // Note that the y position from Event is inverted.
-        mousePos.x = Event.current.mousePosition.x;
-        mousePos.y = Camera.main.pixelHeight - Event.current.mousePosition.y;
+        mousePos.x = Input.mousePosition.x;
+        mousePos.y = Input.mousePosition.y;
 
-        point = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.nearClipPlane));
+        mouseDistance.x = (mousePos.x - screenCenter.x) / screenCenter.x;
+        mouseDistance.y = (mousePos.y - screenCenter.y) / screenCenter.y;
 
 
 
         transform.position += transform.forward * Time.deltaTime * speed;
 
-        speed -= transform.forward.y * Time.deltaTime  * 30.0f;
+        speed -= transform.forward.y * Time.deltaTime * 30.0f;
 
         if (speed < 35.0f) speed = 35.0f;
 
-        transform.Rotate(Input.GetAxis("Vertical"), 0.0f, -Input.GetAxis("Horizontal"));
+        transform.Rotate(-mouseDistance.y * lookSpeed * Time.deltaTime, mouseDistance.x * lookSpeed * Time.deltaTime, 0f, Space.Self);
 
         //float terrainHeightAtMothLocation = Terrain.activeTerrain.SampleHeight(transform.position);
 
